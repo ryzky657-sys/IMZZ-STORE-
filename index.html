@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>IMZZ STORE — Auto Order Suntik Sosmed</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap');
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Rajdhani',sans-serif; -webkit-tap-highlight-color:transparent; }
+
+        body {
+            background: linear-gradient(145deg, #0a0a1a, #15082b, #0a0a1a);
+            min-height:100vh;
+            color:#fff;
+            padding:20px 0 40px;
+            display:flex;
+            justify-content:center;
+        }
+
+        .container {
+            width:100%;
+            max-width:440px;
+            padding:0 18px;
+        }
+
+        /* HEADER */
+        .header {
+            text-align:center;
+            margin-bottom:20px;
+            padding:20px 0;
+        }
+        .header .store-name {
+            font-family:'Orbitron',monospace;
+            font-size:26px;
+            font-weight:900;
+            color:#25D366;
+            letter-spacing:3px;
+            text-shadow:0 0 30px #25D36666;
+        }
+        .header .tagline {
+            color:#25D36688;
+            font-size:12px;
+            letter-spacing:5px;
+            margin-top:6px;
+        }
+        .header .divider {
+            width:80px;
+            height:2px;
+            background:linear-gradient(90deg, transparent, #25D366, transparent);
+            margin:10px auto;
+        }
+
+        /* CARD */
+        .card {
+            background: rgba(255,255,255,0.04);
+            border:1px solid rgba(37,211,102,0.25);
+            border-radius:24px;
+            padding:22px 20px;
+            margin-bottom:16px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+        }
+
+        .section-title {
+            font-family:'Orbitron',monospace;
+            font-size:13px;
+            color:#25D366;
+            letter-spacing:3px;
+            margin-bottom:14px;
+            padding-bottom:8px;
+            border-bottom:1px solid rgba(37,211,102,0.2);
+            display:flex;
+            align-items:center;
+            gap:8px;
+        }
+
+        /* FORM */
+        .form-group { margin-bottom:14px; }
+        .form-group label {
+            display:block;
+            color:#9ad4b0;
+            font-size:11px;
+            letter-spacing:2px;
+            margin-bottom:6px;
+            font-weight:600;
+        }
+        .form-group input,
+        .form-group select {
+            width:100%;
+            padding:14px 16px;
+            background:rgba(0,0,0,0.4);
+            border:1px solid rgba(37,211,102,0.3);
+            border-radius:14px;
+            color:#fff;
+            font-size:15px;
+            font-family:'Rajdhani',sans-serif;
+            outline:none;
+            transition:0.2s;
+        }
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color:#25D366;
+            box-shadow:0 0 25px rgba(37,211,102,0.2);
+        }
+        .form-group input::placeholder { color:#4a6a5a; }
+        .form-group select option {
+            background:#0a0a1a;
+            color:#fff;
+        }
+
+        /* PAKET LIST */
+        .paket-list {
+            display:flex;
+            flex-direction:column;
+            gap:8px;
+            max-height:300px;
+            overflow-y:auto;
+            padding-right:4px;
+        }
+        .paket-list::-webkit-scrollbar { width:5px; }
+        .paket-list::-webkit-scrollbar-thumb {
+            background:#25D36666;
+            border-radius:10px;
+        }
+        .paket-item {
+            background:rgba(0,0,0,0.35);
+            border:1px solid rgba(37,211,102,0.2);
+            border-radius:14px;
+            padding:13px 16px;
+            cursor:pointer;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            transition:0.15s;
+            position:relative;
+        }
+        .paket-item:active { transform:scale(0.98); }
+        .paket-item.selected {
+            background:linear-gradient(135deg, rgba(37,211,102,0.25), rgba(37,211,102,0.1));
+            border-color:#25D366;
+            box-shadow:0 0 25px rgba(37,211,102,0.3);
+        }
+        .paket-item.selected::before {
+            content:'✓';
+            position:absolute;
+            left:8px;
+            top:50%;
+            transform:translateY(-50%);
+            color:#25D366;
+            font-weight:900;
+            font-size:16px;
+        }
+        .paket-item.selected .paket-info { padding-left:18px; }
+        .paket-item .paket-info { transition:0.2s; }
+        .paket-item .paket-name {
+            font-size:14px;
+            font-weight:700;
+            color:#c8f0d8;
+            letter-spacing:1px;
+        }
+        .paket-item .paket-price {
+            font-family:'Orbitron',monospace;
+            font-size:13px;
+            font-weight:700;
+            color:#25D366;
+        }
+
+        /* GROUP LABEL */
+        .group-label {
+            font-family:'Orbitron',monospace;
+            font-size:11px;
+            color:#f5c542;
+            letter-spacing:3px;
+            margin:14px 0 8px;
+            padding-bottom:4px;
+            border-bottom:1px dashed rgba(245,197,66,0.3);
+        }
+        .group-label.murmer { color:#25D366; border-bottom-color:rgba(37,211,102,0.3); }
+        .group-label.besar { color:#f5c542; border-bottom-color:rgba(245,197,66,0.3); }
+
+        /* BUTTON */
+        .btn-order {
+            width:100%;
+            padding:18px;
+            background:linear-gradient(135deg, #25D366, #1ebe5d);
+            border:none;
+            border-radius:16px;
+            color:#fff;
+            font-family:'Orbitron',monospace;
+            font-size:16px;
+            font-weight:900;
+            letter-spacing:3px;
+            cursor:pointer;
+            margin-top:6px;
+            box-shadow:0 8px 35px rgba(37,211,102,0.4);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            gap:10px;
+            animation: waPulse 1.8s ease-in-out infinite;
+        }
+        .btn-order:active { transform:scale(0.96); }
+        @keyframes waPulse {
+            0%,100% { box-shadow:0 8px 35px rgba(37,211,102,0.4); }
+            50% { box-shadow:0 8px 55px rgba(37,211,102,0.7); }
+        }
+
+        /* INFO */
+        .info-row {
+            display:flex;
+            justify-content:space-between;
+            padding:8px 0;
+            font-size:13px;
+            color:#9ad4b0;
+            border-bottom:1px solid rgba(37,211,102,0.1);
+        }
+        .info-row span:last-child { color:#fff; font-weight:700; }
+        .info-row.total {
+            border-bottom:none;
+            margin-top:6px;
+            padding-top:12px;
+            border-top:1px solid rgba(37,211,102,0.3);
+        }
+        .info-row.total span:last-child {
+            color:#25D366;
+            font-family:'Orbitron',monospace;
+            font-size:16px;
+        }
+
+        /* PAYMENT */
+        .payment-list {
+            display:flex;
+            flex-direction:column;
+            gap:8px;
+        }
+        .payment-item {
+            display:flex;
+            align-items:center;
+            gap:10px;
+            background:rgba(0,0,0,0.3);
+            border:1px solid rgba(37,211,102,0.15);
+            border-radius:12px;
+            padding:11px 14px;
+            font-size:13px;
+            color:#c8f0d8;
+        }
+        .payment-item .emoji { font-size:18px; }
+
+        /* FOOTER */
+        .footer {
+            text-align:center;
+            color:#4a6a5a;
+            font-size:11px;
+            letter-spacing:2px;
+            margin-top:20px;
+            line-height:1.8;
+        }
+        .footer .wa { color:#25D366; font-weight:700; }
+
+        /* TOAST */
+        .toast-msg {
+            position:fixed;
+            bottom:25px;
+            left:50%;
+            transform:translateX(-50%);
+            background:rgba(0,0,0,0.95);
+            padding:13px 28px;
+            border-radius:14px;
+            font-weight:700;
+            font-size:13px;
+            letter-spacing:1px;
+            border:1px solid #25D36666;
+            color:#25D366;
+            z-index:9999;
+            text-align:center;
+            animation: toastAnim 2s forwards;
+            max-width:90vw;
+        }
+        @keyframes toastAnim {
+            0% { opacity:0; transform:translateX(-50%) translateY(30px); }
+            15% { opacity:1; transform:translateX(-50%) translateY(0); }
+            85% { opacity:1; transform:translateX(-50%) translateY(0); }
+            100% { opacity:0; transform:translateX(-50%) translateY(-15px); }
+        }
+
+        /* SPLASH */
+        #splash {
+            position:fixed; top:0; left:0;
+            width:100%; height:100%;
+            background:linear-gradient(145deg, #0a0a1a, #15082b);
+            display:flex;
+            flex-direction:column;
+            justify-content:center;
+            align-items:center;
+            z-index:9999;
+            transition:opacity 0.6s;
+        }
+        #splash.hide { opacity:0; pointer-events:none; }
+        .splash-img {
+            width:160px; height:160px;
+            border-radius:50%;
+            border:4px solid #25D366;
+            overflow:hidden;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:70px;
+            background:#0a0a1a;
+            box-shadow:0 0 60px #25D36666;
+            animation: gojoPulse 2s ease-in-out infinite;
+        }
+        .splash-img img { width:100%; height:100%; object-fit:cover; }
+        @keyframes gojoPulse {
+            0%,100% { transform:scale(1); }
+            50% { transform:scale(1.05); }
+        }
+        .splash-title {
+            font-family:'Orbitron',monospace;
+            font-size:26px;
+            font-weight:900;
+            color:#25D366;
+            margin-top:20px;
+            letter-spacing:5px;
+            text-shadow:0 0 30px #25D366;
+        }
+        .splash-sub {
+            color:#25D36688;
+            font-size:12px;
+            letter-spacing:6px;
+            margin-top:8px;
+        }
+        .load-bar {
+            width:180px;
+            height:3px;
+            background:#1a1a2e;
+            border-radius:10px;
+            margin-top:22px;
+            overflow:hidden;
+        }
+        .load-fill {
+            height:100%;
+            width:0%;
+            background:linear-gradient(90deg, #25D366, #7ef0a8);
+            animation: loadFill 2s ease forwards;
+        }
+        @keyframes loadFill { to { width:100%; } }
+    </style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash">
+    <div class="splash-img">
+        <img src="gojo.jpg" alt="Logo" onerror="this.style.display='none'; this.parentElement.textContent='🛒'">
+    </div>
+    <div class="splash-title">IMZZ STORE</div>
+    <div class="splash-sub">AUTO ORDER</div>
+    <div class="load-bar"><div class="load-fill"></div></div>
+</div>
+
+<div class="container">
+
+    <!-- HEADER -->
+    <div class="header">
+        <div class="store-name">IMZZ STORE</div>
+        <div class="tagline">SUNTIK SALURAN / CH</div>
+        <div class="divider"></div>
+    </div>
+
+    <!-- FORM ORDER -->
+    <div class="card">
+        <div class="section-title">📝 DATA ORDER</div>
+
+        <div class="form-group">
+            <label>👤 NAMA PEMBELI</label>
+            <input type="text" id="buyerName" placeholder="Masukkan nama...">
+        </div>
+
+        <div class="form-group">
+            <label>🔗 LINK / USERNAME TARGET</label>
+            <input type="text" id="targetLink" placeholder="Link saluran / username...">
+        </div>
+
+        <div class="form-group">
+            <label>📱 NOMOR WHATSAPP</label>
+            <input type="tel" id="buyerWA" placeholder="08xx xxxx xxxx" maxlength="15">
+        </div>
+    </div>
+
+    <!-- PAKET -->
+    <div class="card">
+        <div class="section-title">⚡ PILIH PAKET</div>
+
+        <div class="group-label murmer">🤤 PAKET MURMER</div>
+        <div class="paket-list" id="paketMurmer"></div>
+
+        <div class="group-label besar">🤑 PAKET BESAR</div>
+        <div class="paket-list" id="paketBesar"></div>
+    </div>
+
+    <!-- RINGKASAN -->
+    <div class="card">
+        <div class="section-title">🧾 RINGKASAN</div>
+        <div class="info-row"><span>Nama</span><span id="sumName">-</span></div>
+        <div class="info-row"><span>Target</span><span id="sumTarget">-</span></div>
+        <div class="info-row"><span>Paket</span><span id="sumPaket">-</span></div>
+        <div class="info-row"><span>WA</span><span id="sumWA">-</span></div>
+        <div class="info-row total"><span>TOTAL</span><span id="sumTotal">Rp 0</span></div>
+    </div>
+
+    <!-- PAYMENT -->
+    <div class="card">
+        <div class="section-title">💸 PEMBAYARAN</div>
+        <div class="payment-list">
+            <div class="payment-item"><span class="emoji">💚</span> GOPAY</div>
+            <div class="payment-item"><span class="emoji">💙</span> DANA</div>
+            <div class="payment-item"><span class="emoji">📱</span> QRIS ALL PAYMENT</div>
+        </div>
+    </div>
+
+    <!-- BUTTON -->
+    <button class="btn-order" onclick="kirimOrder()">
+        <span>📲</span> ORDER VIA WHATSAPP
+    </button>
+
+    <div class="footer">
+        MC / REKBER GAS FEE LU<br>
+        MINAT? TANYA SUNG KE PM<br>
+        <span class="wa">📞 085943817424 (UTAMA)</span>
+    </div>
+</div>
+
+<script>
+    // ===== DATA PAKET =====
+    const paketMurmer = [
+        { pengikut: '56 PENGIKUT', harga: 500, label: '500P' },
+        { pengikut: '120 PENGIKUT', harga: 1500, label: '1,5K' },
+        { pengikut: '220 PENGIKUT', harga: 2500, label: '2,5K' },
+        { pengikut: '320 PENGIKUT', harga: 3500, label: '3,5K' },
+        { pengikut: '420 PENGIKUT', harga: 4500, label: '4,5K' },
+        { pengikut: '520 PENGIKUT', harga: 5500, label: '5,5K' },
+        { pengikut: '620 PENGIKUT', harga: 6500, label: '6,5K' },
+        { pengikut: '720 PENGIKUT', harga: 7500, label: '7,5K' },
+        { pengikut: '820 PENGIKUT', harga: 8500, label: '8,5K' },
+        { pengikut: '920 PENGIKUT', harga: 9500, label: '9,5K' }
+    ];
+
+    const paketBesar = [
+        { pengikut: '1.000 PENGIKUT', harga: 10000, label: '10K' },
+        { pengikut: '1.500 PENGIKUT', harga: 15000, label: '15K' },
+        { pengikut: '2.000 PENGIKUT', harga: 20000, label: '20K' },
+        { pengikut: '2.500 PENGIKUT', harga: 25000, label: '25K' }
+    ];
+
+    // ===== RENDER PAKET =====
+    function renderPaket() {
+        const murmerEl = document.getElementById('paketMurmer');
+        const besarEl = document.getElementById('paketBesar');
+
+        paketMurmer.forEach((p, i) => {
+            const div = document.createElement('div');
+            div.className = 'paket-item';
+            div.setAttribute('data-paket', p.pengikut);
+            div.setAttribute('data-harga', p.harga);
+            div.innerHTML = `
+                <div class="paket-info">
+                    <div class="paket-name">${p.pengikut}</div>
+                </div>
+                <div class="paket-price">${p.label}</div>
+            `;
+            div.onclick = function() { selectPaket(this); };
+            murmerEl.appendChild(div);
+        });
+
+        paketBesar.forEach((p, i) => {
+            const div = document.createElement('div');
+            div.className = 'paket-item';
+            div.setAttribute('data-paket', p.pengikut);
+            div.setAttribute('data-harga', p.harga);
+            div.innerHTML = `
+                <div class="paket-info">
+                    <div class="paket-name">${p.pengikut}</div>
+                </div>
+                <div class="paket-price">${p.label}</div>
+            `;
+            div.onclick = function() { selectPaket(this); };
+            besarEl.appendChild(div);
+        });
+    }
+    renderPaket();
+
+    // ===== SELECT PAKET =====
+    let selectedPaket = null;
+    let selectedHarga = 0;
+
+    function selectPaket(el) {
+        document.querySelectorAll('.paket-item').forEach(p => p.classList.remove('selected'));
+        el.classList.add('selected');
+        selectedPaket = el.getAttribute('data-paket');
+        selectedHarga = parseInt(el.getAttribute('data-harga'));
+        document.getElementById('sumPaket').textContent = selectedPaket;
+        document.getElementById('sumTotal').textContent = 'Rp ' + selectedHarga.toLocaleString('id-ID');
+        toast('✅ ' + selectedPaket + ' DIPILIH', '#25D366');
+    }
+
+    // ===== UPDATE RINGKASAN =====
+    document.getElementById('buyerName').addEventListener('input', function() {
+        document.getElementById('sumName').textContent = this.value || '-';
+    });
+    document.getElementById('targetLink').addEventListener('input', function() {
+        document.getElementById('sumTarget').textContent = this.value || '-';
+    });
+    document.getElementById('buyerWA').addEventListener('input', function() {
+        document.getElementById('sumWA').textContent = this.value || '-';
+    });
+
+    // ===== KIRIM ORDER =====
+    function kirimOrder() {
+        const name = document.getElementById('buyerName').value.trim();
+        const target = document.getElementById('targetLink').value.trim();
+        const wa = document.getElementById('buyerWA').value.trim();
+
+        if(!name) {
+            toast('⛔ NAMA KOSONG!', '#ff0044');
+            return;
+        }
+        if(!target) {
+            toast('⛔ LINK TARGET KOSONG!', '#ff0044');
+            return;
+        }
+        if(!wa) {
+            toast('⛔ NOMOR WA KOSONG!', '#ff0044');
+            return;
+        }
+        if(!selectedPaket) {
+            toast('⛔ PILIH PAKET DULU!', '#ff0044');
+            return;
+        }
+
+        // Format pesan WhatsApp
+        const pesan = 
+`╔══════════════════╗
+║  🛒 *ORDER BARU*  ║
+╚══════════════════╝
+
+👤 *Nama:* ${name}
+🔗 *Target:* ${target}
+📱 *WA:* ${wa}
+
+━━━━━━━━━━━━━━━━━━
+📦 *PAKET DIPILIH*
+━━━━━━━━━━━━━━━━━━
+✨ ${selectedPaket}
+💰 *Harga:* Rp ${selectedHarga.toLocaleString('id-ID')}
+
+━━━━━━━━━━━━━━━━━━
+💸 *PEMBAYARAN*
+━━━━━━━━━━━━━━━━━━
+> GOPAY
+> DANA
+> QRIS ALL PAYMENT
+
+━━━━━━━━━━━━━━━━━━
+📌 *IMZZ STORE*
+Auto Order Suntik Sosmed
+━━━━━━━━━━━━━━━━━━
+
+_Mohon diproses ya min 🙏_`;
+
+        // Nomor WA tujuan (format internasional tanpa +)
+        const nomorWA = '6285943817424';
+        const url = 'https://wa.me/' + nomorWA + '?text=' + encodeURIComponent(pesan);
+
+        toast('📲 Membuka WhatsApp...', '#25D366');
+
+        // Auto buka WhatsApp
+        setTimeout(function() {
+            window.open(url, '_blank');
+        }, 500);
+    }
+
+    // ===== TOAST =====
+    function toast(msg, color) {
+        color = color || '#25D366';
+        const t = document.createElement('div');
+        t.className = 'toast-msg';
+        t.textContent = msg;
+        t.style.color = color;
+        t.style.borderColor = color + '66';
+        document.body.appendChild(t);
+        setTimeout(function() { t.remove(); }, 2100);
+    }
+
+    // ===== SPLASH TIMER =====
+    setTimeout(function() {
+        document.getElementById('splash').classList.add('hide');
+    }, 2200);
+</script>
+</body>
+</html>
